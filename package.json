@@ -1,0 +1,27 @@
+{
+  "name": "@rydolabs/hwpx-pages",
+  "version": "0.9.0-rc.1",
+  "private": true,
+  "description": "Browser-first HWPX renderer with optional diff and React support",
+  "type": "module",
+  "files": [
+    "dist/",
+    "react/",
+    "styles/",
+    "README.md",
+    "SECURITY.md"
+  ],
+  "exports": {
+    ".": "./dist/hwpx-viewer.module.mjs",
+    "./react": "./react/index.mjs",
+    "./styles": "./styles/hwpx-diff-theme.css"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "scripts": {
+    "test:stable": "python tools/stable_regression.py",
+    "test:security": "python tools/security_smoke.py",
+    "test": "npm run test:stable && npm run test:security"
+  }
+}
