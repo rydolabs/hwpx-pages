@@ -1,0 +1,8 @@
+src/
+tests/
+tools/
+docs/
+examples/
+*.hwpx
+*.pdf
+*-out/
