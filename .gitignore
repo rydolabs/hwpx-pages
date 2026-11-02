@@ -1,0 +1,15 @@
+node_modules/
+.DS_Store
+*.log
+coverage/
+.tmp/
+tmp/
+
+# Generated regression output
+*-out/
+tests/**/out/
+tests/**/actual/
+
+# Generated release artifacts
+*.tgz
+*.zip
