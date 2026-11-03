@@ -1,0 +1,114 @@
+name: Prepare v41 scripts migration
+
+on:
+  push:
+    branches: [chore/migrate-v41-scripts-ci]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prepare-v41-scripts-migration
+  cancel-in-progress: true
+
+jobs:
+  migrate:
+    if: github.ref == 'refs/heads/chore/migrate-v41-scripts-ci'
+    runs-on: ubuntu-24.04
+    container: python:3.13-trixie
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Expand validated v41 payload and install CI config
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp .bootstrap/payload.tar.xz /tmp/hwpx-pages-v41.tar.xz
+          echo '09b2e24a214511cd7feff8aed193ba89851518d792ba773a240e173b0567b05b  /tmp/hwpx-pages-v41.tar.xz' | sha256sum -c -
+          cp .github/workflows/ci.yml /tmp/hwpx-ci.yml
+          cp .github/workflows/auto-merge.yml /tmp/hwpx-auto-merge.yml
+          cp docs/CI_AND_MERGE.md /tmp/hwpx-ci-guide.md
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          tar -xJf /tmp/hwpx-pages-v41.tar.xz -C .
+          mkdir -p .github/workflows docs
+          rm -f .github/workflows/*.yml .github/workflows/*.yaml
+          cp /tmp/hwpx-ci.yml .github/workflows/ci.yml
+          cp /tmp/hwpx-auto-merge.yml .github/workflows/auto-merge.yml
+          cp /tmp/hwpx-ci-guide.md docs/CI_AND_MERGE.md
+
+          python - <<'PY'
+          from pathlib import Path
+          root = Path.cwd()
+          old, new = root / 'tools', root / 'scripts'
+          if old.exists():
+              if new.exists():
+                  raise SystemExit('Both tools/ and scripts/ exist; avoid overwriting')
+              old.rename(new)
+          if not new.is_dir():
+              raise SystemExit('Expected scripts/ or tools/ in payload')
+          for file in root.rglob('*'):
+              if not file.is_file() or '.git' in file.parts or 'dist' in file.parts:
+                  continue
+              if file.suffix not in {'.py', '.md', '.json', '.yml', '.yaml', '.txt'}:
+                  continue
+              try:
+                  content = file.read_text(encoding='utf-8')
+              except UnicodeError:
+                  continue
+              replaced = content.replace('tools/', 'scripts/')
+              if replaced != content:
+                  file.write_text(replaced, encoding='utf-8')
+          if not (root / 'requirements-test.txt').is_file():
+              (root / 'requirements-test.txt').write_bytes((root / 'requirements-dev.txt').read_bytes())
+          npmignore = root / '.npmignore'
+          content = npmignore.read_text() if npmignore.exists() else ''
+          for part in ['scripts/', 'tools/']:
+              if part not in content.splitlines():
+                  content += '\n' + part + '\n'
+          npmignore.write_text(content)
+          for name in ['release_gate.py', 'check_package_contents.py']:
+              path = new / name
+              content = path.read_text()
+              content = content.replace("'scripts/'", "'scripts/','tools/'")
+              path.write_text(content)
+          pkg = (root / 'package.json').read_text()
+          if 'scripts/release_gate.py' not in pkg:
+              raise SystemExit('Missing migrated package.json test:release script')
+          readme = root / 'README.md'
+          text = readme.read_text()
+          if 'docs/CI_AND_MERGE.md' not in text:
+              readme.write_text(text + '\n## CI and merge policy\n\nPull requests must pass the full GitHub Actions release gate before merging. See [CI and merge policy](docs/CI_AND_MERGE.md).\n')
+          PY
+
+      - name: Install Chromium, Korean fonts, Python and Node dependencies
+        shell: bash
+        run: |
+          set -eux
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            chromium fontconfig fonts-nanum fonts-baekmuk poppler-utils nodejs npm git
+          fc-cache -f
+          python -m pip install --no-cache-dir -r requirements-test.txt
+
+      - name: Run full release gate before pushing the migration
+        run: |
+          npm run test:release
+          npm pack --dry-run --json > npm-pack-result.json
+          python scripts/check_package_contents.py npm-pack-result.json
+          git diff --exit-code -- dist/
+
+      - name: Commit validated migration to working branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No migration changes to commit'; exit 0
+          fi
+          git commit -m 'chore: migrate v41 source and tests into scripts layout'
+          git push origin HEAD:chore/migrate-v41-scripts-ci
