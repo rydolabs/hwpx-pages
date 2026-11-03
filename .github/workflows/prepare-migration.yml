@@ -1,6 +1,8 @@
 name: Prepare v41 scripts migration
 
 on:
+  pull_request:
+    branches: [main]
   push:
     branches: [chore/migrate-v41-scripts-ci]
   workflow_dispatch:
@@ -14,12 +16,14 @@ concurrency:
 
 jobs:
   migrate:
-    if: github.ref == 'refs/heads/chore/migrate-v41-scripts-ci'
+    if: github.ref == 'refs/heads/chore/migrate-v41-scripts-ci' || (github.event_name == 'pull_request' && github.head_ref == 'chore/migrate-v41-scripts-ci')
     runs-on: ubuntu-24.04
     container: python:3.13-trixie
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: chore/migrate-v41-scripts-ci
 
       - name: Expand validated v41 payload and install CI config
         shell: bash
