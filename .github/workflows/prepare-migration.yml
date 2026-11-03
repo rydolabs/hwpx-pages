@@ -93,9 +93,20 @@ jobs:
                   "raise SystemExit(0 if not missing and not forbidden else 1)\n",
                   encoding='utf-8'
               )
-          pkg = (root / 'package.json').read_text()
-          if 'scripts/release_gate.py' not in pkg:
-              raise SystemExit('Missing migrated package.json test:release script')
+          import json
+          pkg_path = root / 'package.json'
+          package = json.loads(pkg_path.read_text())
+          commands = package.setdefault('scripts', {})
+          commands.update({
+              'build': 'python3 scripts/build_viewer_bundle.py',
+              'test:renderer-lock': 'python3 scripts/check_renderer_unchanged.py',
+              'test:integration': 'python3 scripts/integration_regression.py',
+              'test:stable': 'python3 scripts/stable_regression.py',
+              'test:release': 'python3 scripts/release_gate.py',
+              'test:quick': 'npm run build && npm run test:renderer-lock && npm run test:integration',
+              'pack:check': 'npm run build && npm pack --dry-run --json',
+          })
+          pkg_path.write_text(json.dumps(package, ensure_ascii=False, indent=2) + '\n')
           readme = root / 'README.md'
           text = readme.read_text()
           if 'docs/CI_AND_MERGE.md' not in text:
