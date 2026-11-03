@@ -1,0 +1,13 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>hwpx-preview demo</title>
+<style>
+html,body{margin:0;background:#ddd;font-family:system-ui,sans-serif}.toolbar{padding:10px 14px;position:sticky;top:0;background:#222;color:#fff;z-index:3;display:flex;gap:12px;align-items:center}.stage{padding:20px;display:flex;justify-content:center}.hwpx-page{transform-origin:top center}.hwpx-line{box-sizing:border-box}.note{font-size:12px;opacity:.75}
+</style></head><body>
+<div class="toolbar"><strong>hwpx-preview</strong><input id="file" type="file" accept=".hwpx"><span class="note">순수 JS ZIP + DOMParser 렌더러</span></div>
+<div id="stage" class="stage"></div>
+<script src="./hwpx-preview.js"></script>
+<script>
+let current;
+async function show(buf){ current?.destroy?.(); current=await renderHwpx(buf,document.querySelector('#stage'),{targetWidth:724,matchEmbeddedPreview:true}); window.__ready=true; }
+document.querySelector('#file').addEventListener('change',async e=>{const f=e.target.files[0]; if(f) show(await f.arrayBuffer());});
+fetch('./sample.hwpx').then(r=>r.arrayBuffer()).then(show).catch(console.error);
+</script></body></html>

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HWPX 변경사항 비교</title>
+<link rel="stylesheet" href="./hwpx-diff-theme.css">
+<style>
+:root{--bg:#faf9f7;--text:#252421;--sub:#77736c;--line:#e3e0da;--panel:#fff}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}.top{position:sticky;top:0;z-index:30;background:rgba(250,249,247,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(8px)}.filebar{display:flex;align-items:center;gap:8px;padding:9px 16px}.filebar label{font-size:11px;color:var(--sub)}.filebar input{max-width:205px;font-size:11px}.primary{border:0;background:#343330;color:#fff;border-radius:6px;padding:7px 11px;font-size:12px;cursor:pointer}.status{margin-left:auto;font-size:11px;color:var(--sub)}.workspace{max-width:920px;margin:0 auto;padding:18px 20px 44px}.hint{font-size:12px;color:var(--sub);padding:44px 0;text-align:center}.advanced{margin-left:2px;position:relative}.advanced>summary{font-size:11px;color:var(--sub);cursor:pointer;list-style:none;padding:5px 6px;border-radius:5px}.advanced>summary:hover{background:#f0efec}.advanced>summary::-webkit-details-marker{display:none}.advanced-panel{position:absolute;right:0;top:30px;width:180px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 26px rgba(0,0,0,.08);padding:8px;z-index:40}.advanced-panel label{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px;font-size:11px;color:#55514b}.advanced-panel select{font-size:11px;border:1px solid var(--line);border-radius:5px;padding:3px;background:#fff}@media(max-width:700px){.filebar{align-items:flex-start;flex-wrap:wrap}.status{width:100%;margin-left:0}.workspace{padding:12px}.filebar input{max-width:150px}}
+</style></head><body>
+<div class="top"><div class="filebar">
+  <label>원본 <input id="oldFile" type="file" accept=".hwpx"></label>
+  <label>수정본 <input id="newFile" type="file" accept=".hwpx"></label>
+  <button id="compareBtn" class="primary">비교</button>
+  <details class="advanced"><summary>표시 설정</summary><div class="advanced-panel">
+    <label>스타일 <select id="themeSel"><option value="clean">깔끔하게</option><option value="default">기본</option><option value="minimal">최소</option><option value="review">강조</option><option value="none">표시 없음</option></select></label>
+    <label>작성자 <input id="authorOpt" type="checkbox"></label>
+    <label>유형 마커 <input id="markerOpt" type="checkbox"></label>
+  </div></details>
+  <span id="status" class="status">두 HWPX를 선택하세요.</span>
+</div></div>
+<main class="workspace"><div id="viewer"><div class="hint">비교할 문서를 선택하면 변경사항이 여기에 표시됩니다.</div></div></main>
+<script src="./hwpx-viewer.bundle.js"></script>
+<script>
+const $=s=>document.querySelector(s);let viewer=null;
+async function compare(){const oldFile=$('#oldFile').files[0],newFile=$('#newFile').files[0];if(!oldFile||!newFile){$('#status').textContent='원본과 수정본을 모두 선택하세요.';return}$('#status').textContent='비교 중…';viewer?.destroy?.();viewer=await HwpxViewer.open(newFile,$('#viewer'),{compareWith:oldFile,theme:$('#themeSel').value,showAuthor:$('#authorOpt').checked,advanced:{showMarkers:$('#markerOpt').checked}});$('#status').textContent=`변경사항 ${viewer.diff.summary.total}개`;}
+$('#compareBtn').onclick=compare;$('#themeSel').onchange=()=>viewer?.setTheme?.($('#themeSel').value);$('#authorOpt').onchange=()=>{if(!viewer)return;viewer.advanced.options.ui.behavior.showAuthor=$('#authorOpt').checked;viewer.advanced.refresh();};$('#markerOpt').onchange=()=>{if(!viewer)return;viewer.advanced.options.ui.behavior.showMarkers=$('#markerOpt').checked;viewer.advanced.refresh();};
+</script></body></html>

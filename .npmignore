@@ -1,8 +1,12 @@
 src/
 tests/
-tools/
+scripts/
 docs/
 examples/
+.github/
+requirements-dev.txt
 *.hwpx
 *.pdf
 *-out/
+
+tools/

@@ -1,0 +1,64 @@
+{
+  "cases": [
+    {
+      "id": "text-flow",
+      "description": "Long flowing text across multiple pages",
+      "file": "fixtures/text-flow.hwpx",
+      "pdf": "reference-pdf/text-flow.pdf"
+    },
+    {
+      "id": "columns",
+      "description": "Two-column layout with column/page breaks",
+      "file": "fixtures/columns.hwpx",
+      "pdf": "reference-pdf/columns.pdf"
+    },
+    {
+      "id": "repeat-header-table",
+      "description": "Flowing table with repeat header rows",
+      "file": "fixtures/repeat-header-table.hwpx",
+      "pdf": "reference-pdf/repeat-header-table.pdf"
+    },
+    {
+      "id": "shape-across-columns",
+      "description": "Floating rectangle across two columns",
+      "file": "fixtures/shape-across-columns.hwpx",
+      "pdf": "reference-pdf/shape-across-columns.pdf"
+    },
+    {
+      "id": "columns-unequal",
+      "description": "Unequal-width two-column layout",
+      "file": "fixtures/columns-unequal.hwpx",
+      "pdf": "reference-pdf/columns-unequal.pdf"
+    },
+    {
+      "id": "floating-picture",
+      "description": "Tall floating picture across pages",
+      "file": "fixtures/floating-picture.hwpx",
+      "pdf": "reference-pdf/floating-picture.pdf"
+    },
+    {
+      "id": "merged-table",
+      "description": "Merged-cell table split across pages",
+      "file": "fixtures/merged-table.hwpx",
+      "pdf": "reference-pdf/merged-table.pdf"
+    },
+    {
+      "id": "nested-table-shape",
+      "description": "Nested table plus behind-text drawing",
+      "file": "fixtures/nested-table-shape.hwpx",
+      "pdf": "reference-pdf/nested-table-shape.pdf"
+    },
+    {
+      "id": "textbox",
+      "description": "Text box growth/current-size case",
+      "file": "fixtures/textbox.hwpx",
+      "pdf": "reference-pdf/textbox.pdf"
+    },
+    {
+      "id": "border-conflict-merged",
+      "description": "Merged cells with conflicting border styles",
+      "file": "fixtures/border-conflict-merged.hwpx",
+      "pdf": "reference-pdf/border-conflict-merged.pdf"
+    }
+  ]
+}

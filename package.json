@@ -2,8 +2,8 @@
   "name": "@rydolabs/hwpx-pages",
   "version": "0.9.0-rc.1",
   "private": true,
-  "description": "Browser-first HWPX renderer with optional diff and React support",
   "type": "module",
+  "description": "Browser-first HWPX renderer with optional diff/Track Changes review UI and React adapter.",
   "files": [
     "dist/",
     "react/",
@@ -13,15 +13,39 @@
   ],
   "exports": {
     ".": "./dist/hwpx-viewer.module.mjs",
-    "./react": "./react/index.mjs",
+    "./react": {
+      "types": "./react/index.d.ts",
+      "default": "./react/index.mjs"
+    },
     "./styles": "./styles/hwpx-diff-theme.css"
   },
   "peerDependencies": {
     "react": ">=18"
   },
+  "sideEffects": [
+    "./dist/hwpx-viewer.bundle.js",
+    "./styles/hwpx-diff-theme.css"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "keywords": [
+    "hwpx",
+    "hwp",
+    "viewer",
+    "document",
+    "react"
+  ],
   "scripts": {
-    "test:stable": "python tools/stable_regression.py",
-    "test:security": "python tools/security_smoke.py",
-    "test": "npm run test:stable && npm run test:security"
+    "build": "python3 scripts/build_viewer_bundle.py",
+    "test:stable": "python3 scripts/stable_regression.py",
+    "test:integration": "python3 scripts/integration_regression.py",
+    "test:security": "python scripts/release_security_smoke.py",
+    "test:release": "python3 scripts/release_gate.py",
+    "test": "npm run test:release",
+    "test:renderer-lock": "python3 scripts/check_renderer_unchanged.py",
+    "test:quick": "npm run build && npm run test:renderer-lock && npm run test:integration",
+    "pack:check": "npm run build && npm pack --dry-run --json"
   }
 }
