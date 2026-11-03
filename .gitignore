@@ -1,3 +1,4 @@
+dist/
 node_modules/
 .DS_Store
 *.log
@@ -6,10 +7,12 @@ coverage/
 tmp/
 
 # Generated regression output
-*-out/
-tests/**/out/
-tests/**/actual/
+stable-regression-out/
+real-world-regression-out/
+regression-out/
+regression-suite-out/
+regression-pdf-out/
 
-# Generated release artifacts
+# Generated packages
 *.tgz
 *.zip

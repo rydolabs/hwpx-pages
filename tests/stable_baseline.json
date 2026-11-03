@@ -1,0 +1,99 @@
+{
+  "version": "v41-release-hardening-rc1",
+  "renderer_sha256": "695b6ec1bb71d3b5d86fa8e96e8bef38a14b48e54137966fc0ada77f61409a58",
+  "sample": {
+    "file": "tests/fixtures/sample.hwpx",
+    "expected_pages": 1,
+    "metrics": {
+      "mae": 20.745980896782918,
+      "ssim": 0.6670710145349062,
+      "rgb_max_error_lt_16": 0.8489848605835635
+    },
+    "tolerance": {
+      "mae_increase": 0.15,
+      "ssim_decrease": 0.003,
+      "rgb_max_error_lt_16_decrease": 0.005
+    }
+  },
+  "pdf": {
+    "tolerance": {
+      "mae_increase": 0.25,
+      "ssim_decrease": 0.005,
+      "rgb_max_error_lt_16_decrease": 0.005
+    },
+    "cases": {
+      "text-flow": {
+        "mae": 8.939645964502244,
+        "ssim": 0.8190186405174249,
+        "rgb_max_error_lt_16": 0.9102148571992525
+      },
+      "columns": {
+        "mae": 8.179751968795351,
+        "ssim": 0.8083268308849729,
+        "rgb_max_error_lt_16": 0.9119442120444743
+      },
+      "repeat-header-table": {
+        "mae": 7.186217049360259,
+        "ssim": 0.8438619999320366,
+        "rgb_max_error_lt_16": 0.9182029363891998
+      },
+      "shape-across-columns": {
+        "mae": 6.244421092297305,
+        "ssim": 0.8584592571752967,
+        "rgb_max_error_lt_16": 0.933977785304297
+      },
+      "columns-unequal": {
+        "mae": 10.129391798686049,
+        "ssim": 0.7641148849347624,
+        "rgb_max_error_lt_16": 0.8912819543728453
+      },
+      "floating-picture": {
+        "mae": 8.701628344970777,
+        "ssim": 0.7926499194897738,
+        "rgb_max_error_lt_16": 0.9124825326188624
+      },
+      "merged-table": {
+        "mae": 1.4493401086958961,
+        "ssim": 0.95864074647511,
+        "rgb_max_error_lt_16": 0.9834651471073119
+      },
+      "nested-table-shape": {
+        "mae": 1.0447508884158645,
+        "ssim": 0.9791409475406091,
+        "rgb_max_error_lt_16": 0.989352467639083
+      },
+      "textbox": {
+        "mae": 0.5955653599682391,
+        "ssim": 0.9860444384544954,
+        "rgb_max_error_lt_16": 0.9942938019114866
+      },
+      "border-conflict-merged": {
+        "mae": 1.4799069976441,
+        "ssim": 0.9475255565084075,
+        "rgb_max_error_lt_16": 0.9835060819009893
+      }
+    }
+  },
+  "real_world": {
+    "case": "conference-template",
+    "tolerance": {
+      "mae_increase": 0.35,
+      "ssim_decrease": 0.007,
+      "rgb_max_error_lt_16_decrease": 0.008
+    },
+    "pages": [
+      {
+        "page": 1,
+        "mae": 14.90697748778465,
+        "ssim": 0.6570315956605051,
+        "rgb_max_error_lt_16": 0.8710873410006095
+      },
+      {
+        "page": 2,
+        "mae": 14.967572284561863,
+        "ssim": 0.6896410838384627,
+        "rgb_max_error_lt_16": 0.8185263641723038
+      }
+    ]
+  }
+}

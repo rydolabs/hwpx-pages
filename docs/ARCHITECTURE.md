@@ -1,32 +1,27 @@
 # Architecture
 
-## Public surface
+## Public API
 
-The default public API is intentionally small:
+The public surface is intentionally small:
 
 ```js
 HwpxViewer.open(file, container)
 HwpxViewer.open(modifiedFile, container, { compareWith: originalFile })
 ```
 
-React is a thin adapter over the same viewer core.
+React is a lifecycle adapter over the same core, not a second renderer.
 
-## Module boundaries
+## Boundaries
 
-- `src/hwpx-preview.js`: HWPX parse/layout/render core.
-- `src/hwpx-viewer.js`: unified high-level API.
-- `src/hwpx-diff.js`: structural comparison.
-- `src/hwpx-track-changes.js`: HWPX tracked-revision parsing.
-- `src/hwpx-diff-ui.js`: review UI behavior.
-- `styles/`: visual presentation only.
-- `react/`: lifecycle adapter only; no second renderer.
+- `src/hwpx-preview.js` — stable HWPX parse/layout/render core.
+- `src/hwpx-viewer.js` — unified high-level API.
+- `src/hwpx-diff.js` — structural diff engine.
+- `src/hwpx-track-changes.js` — tracked-revision parser.
+- `src/hwpx-diff-ui.js` — review UI behavior.
+- `styles/` — presentation only.
+- `react/` — React lifecycle/SSR-safe adapter.
+- `dist/` — generated output; never source of truth.
 
 ## Compatibility rule
 
-Do not add document-specific coordinate tuning.
-
-A renderer compatibility rule is accepted only when it is explained by the HWPX/layout model, covered by a fixture, and passes the full stable regression gate.
-
-## Generated output
-
-`dist/` is generated from source and should not become the source of truth.
+Do not add document-specific coordinate tuning. A compatibility rule must be explained by the HWPX/layout model, covered by a fixture, and pass the full stable gate.

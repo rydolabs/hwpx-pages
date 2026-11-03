@@ -1,0 +1,74 @@
+{
+  "cases": [
+    {
+      "id": "text-flow",
+      "file": "fixtures/text-flow.hwpx",
+      "source": "pages_text_12pt_160.hwpx",
+      "expected_pages": 5,
+      "description": "장문 일반 텍스트 / 12pt / 160% 줄간격"
+    },
+    {
+      "id": "columns",
+      "file": "fixtures/columns.hwpx",
+      "source": "pages_columns_2_break.hwpx",
+      "expected_pages": 4,
+      "description": "2단 편집 + column break"
+    },
+    {
+      "id": "columns-unequal",
+      "file": "fixtures/columns-unequal.hwpx",
+      "source": "pages_columns_unequal_narrow_first.hwpx",
+      "expected_pages": 4,
+      "description": "서로 폭이 다른 2단 편집"
+    },
+    {
+      "id": "floating-picture",
+      "file": "fixtures/floating-picture.hwpx",
+      "source": "pages_picture_floating_tall.hwpx",
+      "expected_pages": 4,
+      "description": "부동 그림과 페이지 흐름"
+    },
+    {
+      "id": "merged-table",
+      "file": "fixtures/merged-table.hwpx",
+      "source": "pages_table_merged_cells_over_the_page_end.hwpx",
+      "expected_pages": 2,
+      "description": "병합 셀이 페이지 끝을 넘는 표"
+    },
+    {
+      "id": "repeat-header-table",
+      "file": "fixtures/repeat-header-table.hwpx",
+      "source": "pages_table_flow_repeat_header.hwpx",
+      "expected_pages": 3,
+      "description": "여러 페이지로 흐르는 표 + 반복 헤더"
+    },
+    {
+      "id": "textbox",
+      "file": "fixtures/textbox.hwpx",
+      "source": "pages_text_box_grown_by_two_lines_current_size_one_less.hwpx",
+      "expected_pages": 1,
+      "description": "텍스트박스 자동 크기/내부 텍스트"
+    },
+    {
+      "id": "shape-across-columns",
+      "file": "fixtures/shape-across-columns.hwpx",
+      "source": "pages_rectangle_on_paper_across_two_columns.hwpx",
+      "expected_pages": 2,
+      "description": "다단 위 PAGE/PAPER 기준 사각형"
+    },
+    {
+      "id": "nested-table-shape",
+      "file": "fixtures/nested-table-shape.hwpx",
+      "source": "pages_cell_table_top_and_bottom_and_a_drawing_behind_the_text.hwpx",
+      "expected_pages": 1,
+      "description": "셀 내부 표 + behind-text 도형"
+    },
+    {
+      "id": "border-conflict-merged",
+      "description": "Merged table with conflicting adjacent border widths, styles, and colors",
+      "file": "fixtures/border-conflict-merged.hwpx",
+      "expected_pages": 2,
+      "source": "synthetic variant of merged-table.hwpx; border-only mutation"
+    }
+  ]
+}

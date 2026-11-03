@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release-gate:
+    name: release-gate
+    runs-on: ubuntu-24.04
+    container: python:3.13-trixie
+    timeout-minutes: 60
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Install reproducible system dependencies
+        run: |
+          set -eux
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            chromium fontconfig fonts-nanum fonts-baekmuk poppler-utils nodejs npm git
+          fc-cache -f
+          chromium --version
+          node --version
+          python --version
+      - name: Install Python test dependencies
+        run: python -m pip install --no-cache-dir -r requirements-test.txt
+      - name: Build and run full release gate
+        run: npm run test:release
+      - name: Assert dist files match source
+        run: git diff --exit-code -- dist/
+      - name: Validate npm package contents (no publish)
+        run: |
+          npm pack --dry-run --json > npm-pack-result.json
+          python scripts/check_package_contents.py npm-pack-result.json
+      - name: Upload regression reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hwpx-regression-${{ github.run_id }}
+          path: |
+            stable-regression-out/
+            real-world-regression-out/
+            npm-pack-result.json
+          if-no-files-found: ignore
+          retention-days: 7

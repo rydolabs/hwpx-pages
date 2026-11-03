@@ -1,0 +1,5 @@
+numpy==2.3.5
+Pillow==12.3.0
+scikit-image==0.26.0
+PyMuPDF==1.26.7
+playwright==1.57.0
