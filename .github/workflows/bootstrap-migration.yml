@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   migrate:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -35,6 +35,7 @@ jobs:
           echo "162bbee443ac2198c07c38f996ca4ce6ecef5f1bae15e1b1fc03783e9d21617d  /tmp/hwpx-pages.tar.xz" | sha256sum -c -
           find . -mindepth 1 -maxdepth 1 ! -name .git ! -name .bootstrap -exec rm -rf {} +
           tar -xJf /tmp/hwpx-pages.tar.xz -C .
+          sed -i 's/runs-on: ubuntu-latest/runs-on: ubuntu-24.04/' .github/workflows/test.yml
           rm -rf .bootstrap
 
       - name: Install system fonts
