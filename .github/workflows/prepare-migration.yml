@@ -74,9 +74,25 @@ jobs:
           npmignore.write_text(content)
           for name in ['release_gate.py', 'check_package_contents.py']:
               path = new / name
+              if not path.exists():
+                  continue
               content = path.read_text()
               content = content.replace("'scripts/'", "'scripts/','tools/'")
               path.write_text(content)
+          checker = new / 'check_package_contents.py'
+          if not checker.exists():
+              checker.write_text(
+                  "import json,sys,pathlib\n"
+                  "data=json.loads(pathlib.Path(sys.argv[1]).read_text())\n"
+                  "files={f['path'] for f in data[0]['files']}\n"
+                  "required={'package.json','README.md','dist/hwpx-viewer.bundle.js','dist/hwpx-viewer.module.mjs','styles/hwpx-diff-theme.css','react/index.mjs','react/index.d.ts'}\n"
+                  "forbidden={f for f in files if f.startswith(('src/','tests/','scripts/','tools/','docs/','examples/','.github/','.bootstrap/'))}\n"
+                  "missing=required-files\n"
+                  "print('package-files:', 'PASS' if not missing and not forbidden else 'FAIL')\n"
+                  "print('missing:',sorted(missing),'forbidden:',sorted(forbidden))\n"
+                  "raise SystemExit(0 if not missing and not forbidden else 1)\n",
+                  encoding='utf-8'
+              )
           pkg = (root / 'package.json').read_text()
           if 'scripts/release_gate.py' not in pkg:
               raise SystemExit('Missing migrated package.json test:release script')
