@@ -1,0 +1,46 @@
+# This workflow is evaluated from the default branch. It never checks out PR code.
+name: Auto merge after CI
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  merge:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.pull_requests[0] != null
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check PR scope and tested head before squash merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          EVENT_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        run: |
+          set -euo pipefail
+          pr_json="$(gh api "repos/$REPO/pulls/$PR_NUMBER")"
+          state="$(jq -r .state <<< "$pr_json")"
+          draft="$(jq -r .draft <<< "$pr_json")"
+          base="$(jq -r .base.ref <<< "$pr_json")"
+          head_repo="$(jq -r .head.repo.full_name <<< "$pr_json")"
+          head_sha="$(jq -r .head.sha <<< "$pr_json")"
+          owner="$(cut -d/ -f1 <<< "$REPO")"
+          author="$(jq -r .user.login <<< "$pr_json")"
+          if [[ "$state" != 'open' || "$draft" != 'false' || "$base" != 'main' || "$head_repo" != "$REPO" || "$author" != "$owner" ]]; then
+            echo 'PR does not satisfy owner-only merge policy: skip'; exit 0
+          fi
+          if [[ -z "$EVENT_SHA" || "$EVENT_SHA" != "$head_sha" ]]; then
+            echo 'PR head moved since successful CI: skip'; exit 0
+          fi
+          echo "Merging PR #$PR_NUMBER after successful CI run $RUN_ID at $head_sha"
+          gh pr merge "$PR_NUMBER" --repo "$REPO" --squash --delete-branch
