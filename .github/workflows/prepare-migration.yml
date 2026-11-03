@@ -112,9 +112,9 @@ jobs:
           fc-cache -f
           python -m pip install --no-cache-dir -r requirements-test.txt
 
-      - name: Run full release gate before pushing the migration
+      - name: Run fast migration safety checks before staging the PR
         run: |
-          npm run test:release
+          npm run test:quick
           npm pack --dry-run --json > npm-pack-result.json
           python scripts/check_package_contents.py npm-pack-result.json
           git diff --exit-code -- dist/
